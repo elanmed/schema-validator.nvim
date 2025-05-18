@@ -1,0 +1,2 @@
+# schema-validator.nvim
+
