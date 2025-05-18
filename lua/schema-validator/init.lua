@@ -9,6 +9,8 @@ local function default(val, default_val)
   return val
 end
 
+local M = {}
+
 --- @alias CustomValidator fun(val: any): boolean
 --- @alias Type "nil" | "number" | "string" | "boolean" | "function" | "table" | CustomValidator
 
@@ -23,7 +25,7 @@ end
 
 --- @param schema Schema
 --- @return boolean
-local function validate(schema, val)
+M.validate = function(schema, val)
   local optional = default(schema.optional, false)
   if val == nil and optional then return false end
 
@@ -43,7 +45,7 @@ local function validate(schema, val)
 
       if type(schema.entries) == "string" then
         for _, curr_val in pairs(val) do
-          if not validate({ type = schema.entries, }, curr_val) then
+          if not M.validate({ type = schema.entries, }, curr_val) then
             return false
           end
         end
@@ -53,7 +55,7 @@ local function validate(schema, val)
         for key, entry in pairs(schema.entries) do
           if val[key] == nil then return false end
 
-          if not validate(entry, val[key]) then
+          if not M.validate(entry, val[key]) then
             return false
           end
         end
@@ -91,16 +93,18 @@ local function validate(schema, val)
 end
 
 --- @param literal string
-local function str_literal(literal)
+M.str_literal = function(literal)
   return function(val) return val == literal end
 end
 
 --- @param schemas Schema[]
-local function union(schemas)
+M.union = function(schemas)
   return function(val)
     for _, schema in pairs(schemas) do
-      if validate(schema, val) then return true end
+      if M.validate(schema, val) then return true end
     end
     return false
   end
 end
+
+return M
