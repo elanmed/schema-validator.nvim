@@ -1,4 +1,5 @@
 local eq = MiniTest.expect.equality
+local err = MiniTest.expect.error
 local validator = require "lua.schema-validator.init"
 local validate = validator.validate
 local str_literal = validator.str_literal
@@ -270,6 +271,60 @@ T["union"]["should return false when both schemas are false"] = function()
       },
     }, 123),
     false
+  )
+end
+
+T["malformed schema"] = MiniTest.new_set()
+T["malformed schema"]["when the schema.type is invalid, it should throw"] = function()
+  err(
+    function()
+      validate({
+        type = "hello",
+      }, "there")
+    end
+  )
+end
+T["malformed schema"]["when the type(schema.type) is invalid, it should throw"] = function()
+  err(
+    function()
+      validate({
+        type = {},
+      }, "there")
+    end
+  )
+end
+T["malformed schema"]["when the schema.entries is invalid, it should throw"] = function()
+  err(
+    function()
+      validate({
+        type = "table",
+        entries = function() end,
+      }, {})
+    end
+  )
+  err(
+    function()
+      validate({
+        type = "table",
+        entries = 123,
+      }, {})
+    end
+  )
+  err(
+    function()
+      validate({
+        type = "table",
+        entries = nil,
+      }, {})
+    end
+  )
+  err(
+    function()
+      validate({
+        type = "table",
+        entries = true,
+      }, {})
+    end
   )
 end
 
