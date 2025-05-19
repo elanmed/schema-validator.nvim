@@ -44,7 +44,7 @@ validate(
     type = "table",
     entries = "number",
   },
-  { 1, nil, 3, 4, }
+  { 1, nil, 3, 4, } -- `true` because `nil` is ignored by `pairs`
 )
 ```
 
@@ -60,7 +60,7 @@ validate(
       { type = "number", },
     },
   },
-  { first = nil, 123, }
+  { first = nil, 123, } -- `optional` can either mean the value of the entry
 )
 validate(
   {
@@ -70,13 +70,14 @@ validate(
       { type = "number", },
     },
   },
-  { nil, 123, }
+  { nil, 123, } -- or `optional` can mean the entry itself
 )
 ```
 
 ### Custom validators
 
 ```lua
+-- a function that takes the value to be validated as an argument and returns a boolean
 validate({ type = function(val) return val % 2 == 0 end, }, 2)
 ```
 
