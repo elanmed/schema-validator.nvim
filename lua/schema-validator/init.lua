@@ -26,6 +26,26 @@ local M = {}
 --- @param schema Schema
 --- @return boolean
 M.validate = function(schema, val)
+  if type(schema.type) ~= "string" and type(schema.type) ~= "function" then
+    error(
+      string.format(
+        "Expected `type(schema.type)` to be a `string` or `function`, received `%s`. Schema: %s",
+        type(schema.type),
+        vim.inspect(schema)
+      )
+    )
+  end
+
+  if type(schema.optional) ~= "nil" and type(schema.optional) ~= "boolean" then
+    error(
+      string.format(
+        "Expected `type(schema.option)` to be `nil` or `boolean`, received `%s`. Schema: %s",
+        type(schema.optional),
+        vim.inspect(schema)
+      )
+    )
+  end
+
   local optional = default(schema.optional, false)
   if val == nil and optional then
     return true
@@ -43,6 +63,16 @@ M.validate = function(schema, val)
     end
 
     if schema.type == "table" then
+      if type(schema.entries) ~= "string" and type(schema.entries) ~= "table" then
+        error(
+          string.format(
+            "Expected `type(schema.entries)` to be a `string` or `table`, received `%s`. Schema: %s",
+            type(schema.entries),
+            vim.inspect(schema)
+          )
+        )
+      end
+
       if type(val) ~= "table" then return false end
 
       if type(schema.entries) == "string" then
@@ -61,14 +91,6 @@ M.validate = function(schema, val)
         end
 
         return true
-      else
-        error(
-          string.format(
-            "Expected `type(schema.entries)` to be a `string` or `table`, received `%s`. Schema: %s",
-            type(schema.entries),
-            vim.inspect(schema)
-          )
-        )
       end
     end
 
@@ -77,14 +99,6 @@ M.validate = function(schema, val)
     return false
   elseif type(schema.type) == "function" then
     return schema.type(val)
-  else
-    error(
-      string.format(
-        "Expected `type(schema.type)` to be a `string` or `function`, received `%s`. Schema: %s",
-        type(schema.type),
-        vim.inspect(schema)
-      )
-    )
   end
 end
 

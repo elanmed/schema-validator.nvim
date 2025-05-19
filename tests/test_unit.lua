@@ -132,6 +132,8 @@ T["table"]["tuple"]["should return true for tables where every value matches the
       { type = "number", },
     },
   }, { "hello", 1, }), true)
+end
+T["table"]["tuple"]["should return true for tables with more values than the schema"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -276,56 +278,25 @@ end
 
 T["malformed schema"] = MiniTest.new_set()
 T["malformed schema"]["when the schema.type is invalid, it should throw"] = function()
-  err(
-    function()
-      validate({
-        type = "hello",
-      }, "there")
-    end
-  )
+  err(function() validate({ type = "hello", }, "there") end)
 end
-T["malformed schema"]["when the type(schema.type) is invalid, it should throw"] = function()
-  err(
-    function()
-      validate({
-        type = {},
-      }, "there")
-    end
-  )
+T["malformed schema"]["when the schema.optional is not a boolean or nil, it should throw"] = function()
+  err(function() validate({ type = "string", optional = function() end, }, "there") end)
+  err(function() validate({ type = "string", optional = 123, }, "there") end)
+  err(function() validate({ type = "string", optional = "hello", }, "there") end)
+  err(function() validate({ type = "string", optional = {}, }, "there") end)
 end
-T["malformed schema"]["when the schema.entries is invalid, it should throw"] = function()
-  err(
-    function()
-      validate({
-        type = "table",
-        entries = function() end,
-      }, {})
-    end
-  )
-  err(
-    function()
-      validate({
-        type = "table",
-        entries = 123,
-      }, {})
-    end
-  )
-  err(
-    function()
-      validate({
-        type = "table",
-        entries = nil,
-      }, {})
-    end
-  )
-  err(
-    function()
-      validate({
-        type = "table",
-        entries = true,
-      }, {})
-    end
-  )
+T["malformed schema"]["when the type(schema.type) is not a string or function, it should throw"] = function()
+  err(function() validate({ type = {}, }, "there") end)
+  err(function() validate({ type = true, }, "there") end)
+  err(function() validate({ type = 123, }, "there") end)
+  err(function() validate({ type = nil, }, "there") end)
+end
+T["malformed schema"]["when the schema.entries is not a string or table, it should throw"] = function()
+  err(function() validate({ type = "table", entries = function() end, }, {}) end)
+  err(function() validate({ type = "table", entries = true, }, {}) end)
+  err(function() validate({ type = "table", entries = 123, }, {}) end)
+  err(function() validate({ type = "table", entries = nil, }, {}) end)
 end
 
 T["kitchen sink"] = MiniTest.new_set()
@@ -463,6 +434,5 @@ T["kitchen sink"]["should return false when not matched"] = function()
     seventh = { false, "there", },
   }), false)
 end
-
 
 return T
