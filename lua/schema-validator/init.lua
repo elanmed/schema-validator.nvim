@@ -27,7 +27,9 @@ local M = {}
 --- @return boolean
 M.validate = function(schema, val)
   local optional = default(schema.optional, false)
-  if val == nil and optional then return true end
+  if val == nil and optional then
+    return true
+  end
 
   if type(schema.type) == "string" then
     if not vim.tbl_contains({ "nil", "number", "string", "boolean", "function", "table", }, schema.type) then
@@ -53,15 +55,9 @@ M.validate = function(schema, val)
         return true
       elseif type(schema.entries) == "table" then
         for key, entry in pairs(schema.entries) do
-          if val[key] == nil then return false end
-
           if not M.validate(entry, val[key]) then
             return false
           end
-        end
-
-        if vim.tbl_count(val) ~= vim.tbl_count(schema.entries) then
-          return false
         end
 
         return true
