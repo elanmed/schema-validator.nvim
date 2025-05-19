@@ -102,9 +102,12 @@ M.validate = function(schema, val)
   end
 end
 
---- @param literal string
-M.str_literal = function(literal)
-  return function(val) return val == literal end
+--- @param literal any
+M.literal = function(literal)
+  vim.inspect()
+  return function(val)
+    return vim.deep_equal(val, literal)
+  end
 end
 
 --- @param schemas Schema[]

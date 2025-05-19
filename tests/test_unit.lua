@@ -2,7 +2,7 @@ local eq = MiniTest.expect.equality
 local err = MiniTest.expect.error
 local validator = require "lua.schema-validator.init"
 local validate = validator.validate
-local str_literal = validator.str_literal
+local literal = validator.literal
 local union = validator.union
 
 local T = MiniTest.new_set()
@@ -86,20 +86,21 @@ T["primitives"]["boolean"]["should handle optional"] = function()
   eq(validate({ type = "nil", optional = true, }, nil), true)
 end
 
-T["str_literal"] = MiniTest.new_set()
-T["str_literal"]["should return true for string literals"] = function()
-  eq(validate({ type = str_literal "hello", }, "hello"), true)
+T["literal"] = MiniTest.new_set()
+T["literal"]["should return true for literals"] = function()
+  eq(validate({ type = literal "hello", }, "hello"), true)
+  eq(validate({ type = literal { 1, 2, 3, }, }, { 1, 2, 3, }), true)
 end
-T["str_literal"]["should return false for non-string literals"] = function()
-  eq(validate({ type = str_literal "hello", }, "there"), false)
-  eq(validate({ type = str_literal "hello", }, function() end), false)
-  eq(validate({ type = str_literal "hello", }, 123), false)
-  eq(validate({ type = str_literal "hello", }, true), false)
-  eq(validate({ type = str_literal "hello", }, {}), false)
+T["literal"]["should return false for non-string literals"] = function()
+  eq(validate({ type = literal "hello", }, "there"), false)
+  eq(validate({ type = literal "hello", }, function() end), false)
+  eq(validate({ type = literal "hello", }, 123), false)
+  eq(validate({ type = literal "hello", }, true), false)
+  eq(validate({ type = literal "hello", }, {}), false)
 end
-T["str_literal"]["should handle optional"] = function()
-  eq(validate({ type = str_literal "hello", }, nil), false)
-  eq(validate({ type = str_literal "hello", optional = true, }, nil), true)
+T["literal"]["should handle optional"] = function()
+  eq(validate({ type = literal "hello", }, nil), false)
+  eq(validate({ type = literal "hello", optional = true, }, nil), true)
 end
 
 T["table"] = MiniTest.new_set()
@@ -125,13 +126,18 @@ end
 
 T["table"]["tuple"] = MiniTest.new_set()
 T["table"]["tuple"]["should return true for tables where every value matches the entries"] = function()
-  eq(validate({
-    type = "table",
-    entries = {
-      { type = "string", },
-      { type = "number", },
-    },
-  }, { "hello", 1, }), true)
+  eq(
+    validate(
+      {
+        type = "table",
+        entries = {
+          { type = "string", },
+          { type = "number", },
+        },
+      },
+      { "hello", 1, }
+    )
+    , true)
 end
 T["table"]["tuple"]["should return true for tables with more values than the schema"] = function()
   eq(validate({
@@ -246,12 +252,15 @@ end
 T["union"] = MiniTest.new_set()
 T["union"]["should return true when one of the schemas is true"] = function()
   eq(
-    validate({
-      type = union {
-        { type = "string", },
-        { type = "boolean", },
+    validate(
+      {
+        type = union {
+          { type = "string", },
+          { type = "boolean", },
+        },
       },
-    }, "hello"),
+      "hello"
+    ),
     true
   )
   eq(
@@ -323,7 +332,7 @@ local kitchen_sink_schema = {
     fifth = {
       type = union {
         { type = "boolean", },
-        { type = str_literal "hello", },
+        { type = literal "hello", },
       },
     },
     sixth = {
