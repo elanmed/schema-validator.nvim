@@ -1,6 +1,8 @@
 # schema-validator.nvim
 
-A lua schema validator for your neovim plugins.
+A schema validator for your neovim plugins. 
+
+Built for neovim to use `vim.*` quality-of-life helpers.
 
 > All examples return `true`
 
