@@ -70,6 +70,21 @@ T["primitives"]["function"]["should handle optional"] = function()
   eq(validate({ type = "function", optional = true, }, nil), true)
 end
 
+T["primitives"]["nil"] = MiniTest.new_set()
+T["primitives"]["nil"]["should return true for nil"] = function()
+  eq(validate({ type = "nil", }, nil), true)
+end
+T["primitives"]["nil"]["should return false for non-nils"] = function()
+  eq(validate({ type = "nil", }, "hello"), false)
+  eq(validate({ type = "nil", }, 123), false)
+  eq(validate({ type = "nil", }, function() end), false)
+  eq(validate({ type = "nil", }, {}), false)
+  eq(validate({ type = "nil", }, false), false)
+end
+T["primitives"]["boolean"]["should handle optional"] = function()
+  eq(validate({ type = "nil", optional = true, }, nil), true)
+end
+
 T["str_literal"] = MiniTest.new_set()
 T["str_literal"]["should return true for string literals"] = function()
   eq(validate({ type = str_literal "hello", }, "hello"), true)
@@ -116,6 +131,13 @@ T["table"]["tuple"]["should return true for tables where every value matches the
       { type = "number", },
     },
   }, { "hello", 1, }), true)
+  eq(validate({
+    type = "table",
+    entries = {
+      { type = "string", },
+      { type = "number", },
+    },
+  }, { "hello", 1, 2, }), true)
 end
 T["table"]["tuple"]["should return false for tables where not every value matches the entries"] = function()
   eq(validate({
@@ -132,13 +154,6 @@ T["table"]["tuple"]["should return false for tables where not every value matche
       { type = "number", },
     },
   }, { "hello", }), false)
-  eq(validate({
-    type = "table",
-    entries = {
-      { type = "string", },
-      { type = "number", },
-    },
-  }, { "hello", 1, 2, }), false)
 end
 T["table"]["tuple"]["should return false for non-tables"] = function()
   eq(validate({
@@ -170,7 +185,7 @@ T["table"]["tuple"]["should return false for non-tables"] = function()
     },
   }, true), false)
 end
-T["table"]["tuple"]["should handle optional"] = function()
+T["table"]["tuple"]["should handle top-level optional"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -186,6 +201,17 @@ T["table"]["tuple"]["should handle optional"] = function()
     },
     optional = true,
   }, nil), true)
+end
+T["table"]["tuple"]["should handle level optional entries"] = function()
+  eq(validate({
+      type = "table",
+      entries = {
+        { type = "string", optional = true, },
+        { type = "number", },
+      },
+    },
+    { nil, 123, }
+  ), true)
 end
 
 T["functions"] = MiniTest.new_set()
@@ -246,5 +272,142 @@ T["union"]["should return false when both schemas are false"] = function()
     false
   )
 end
+
+T["kitchen sink"] = MiniTest.new_set()
+
+--- @type Schema
+local kitchen_sink_schema = {
+  type = "table",
+  entries = {
+    first = {
+      type = "string",
+    },
+    second = {
+      type = "number",
+    },
+    third = {
+      type = "function",
+      optional = true,
+    },
+    fourth = {
+      type = function(val)
+        return val == 123456
+      end,
+    },
+    fifth = {
+      type = union {
+        { type = "boolean", },
+        { type = str_literal "hello", },
+      },
+    },
+    sixth = {
+      type = "table",
+      entries = "number",
+    },
+    seventh = {
+      type = "table",
+      entries = {
+        { type = "boolean", },
+        { type = "number", },
+      },
+    },
+  },
+}
+
+T["kitchen sink"]["should return true when matched"] = function()
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = function() end,
+    fourth = 123456,
+    fifth = "hello",
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), true)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    nil,
+    fourth = 123456,
+    fifth = "hello",
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), true)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = function() end,
+    fourth = 123456,
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), true)
+end
+T["kitchen sink"]["should return false when not matched"] = function()
+  eq(validate(kitchen_sink_schema, {
+    first = {},
+    second = "hello",
+    third = function() end,
+    fourth = 123456,
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), false)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = {},
+    third = function() end,
+    fourth = 123456,
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), false)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = {},
+    fourth = 123456,
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), false)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = function() end,
+    fourth = {},
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), false)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = function() end,
+    fourth = 123456,
+    fifth = {},
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, 1, },
+  }), false)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = function() end,
+    fourth = 123456,
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, "there", },
+    seventh = { false, 1, },
+  }), false)
+  eq(validate(kitchen_sink_schema, {
+    first = "hello",
+    second = 123,
+    third = function() end,
+    fourth = 123456,
+    fifth = true,
+    sixth = { 1, 2, 3, 4, 5, },
+    seventh = { false, "there", },
+  }), false)
+end
+
 
 return T
