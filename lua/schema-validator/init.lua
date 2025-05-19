@@ -27,7 +27,7 @@ local M = {}
 --- @return boolean
 M.validate = function(schema, val)
   local optional = default(schema.optional, false)
-  if val == nil and optional then return false end
+  if val == nil and optional then return true end
 
   if type(schema.type) == "string" then
     if not vim.tbl_contains({ "nil", "number", "string", "boolean", "function", "table", }, schema.type) then

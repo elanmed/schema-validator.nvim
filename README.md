@@ -1,6 +1,6 @@
 # schema-validator.nvim
 
-WIP
+A lua schema validator for your neovim plugins.
 
 ## TODO
 - [ ] Tests
