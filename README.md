@@ -1,8 +1,8 @@
 # schema-validator.nvim
 
-A schema validator for your neovim plugins. 
+A schema validator for your Neovim plugins. 
 
-Built for neovim to use `vim.*` quality-of-life helpers.
+Built for Neovim to use the `vim.*` helper functions.
 
 > All examples return `true`
 
@@ -14,6 +14,7 @@ validate({ type = "number", }, 123)
 validate({ type = "string", }, "hello")
 validate({ type = "boolean", }, true)
 validate({ type = "function", }, function() end)
+validate({ type = "any", }, --[[anything]])
 ```
 
 ### Tables with a set number of items (tuples)

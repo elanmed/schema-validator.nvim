@@ -15,9 +15,9 @@ Custom validators ....................... |schema-validator-custom-validators|
 SCHEMA-VALIDATOR.NVIM                 *schema-validator-schema-validator.nvim*
 
 
-A schema validator for your neovim plugins.
+A schema validator for your Neovim plugins.
 
-Built for neovim to use `vim.*` quality-of-life helpers.
+Built for Neovim to use the `vim.*` helper functions.
 
   All examples return `true`
 
@@ -31,6 +31,7 @@ VALUES COMPARED WITH THE `TYPE` FUNCTION*schema-validator-values-compared-with-t
     validate({ type = "string", }, "hello")
     validate({ type = "boolean", }, true)
     validate({ type = "function", }, function() end)
+    validate({ type = "any", }, --[[anything]])
 <
 
                                                                               

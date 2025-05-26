@@ -7,125 +7,138 @@ local union = validator.union
 
 local T = MiniTest.new_set()
 
-T["primitives"] = MiniTest.new_set()
-T["primitives"]["string"] = MiniTest.new_set()
-T["primitives"]["string"]["should return true for strings"] = function()
+T["type string"] = MiniTest.new_set()
+T["type string"]["string"] = MiniTest.new_set()
+T["type string"]["string"]["should return true for strings"] = function()
   eq(validate({ type = "string", }, "hello"), true)
   eq(validate({ type = "string", }, ""), true)
 end
-T["primitives"]["string"]["should return false for non-strings"] = function()
+T["type string"]["string"]["should return false for non-strings"] = function()
   eq(validate({ type = "string", }, 123), false)
   eq(validate({ type = "string", }, true), false)
   eq(validate({ type = "string", }, function() end), false)
   eq(validate({ type = "string", }, {}), false)
 end
-T["primitives"]["string"]["should handle optional"] = function()
+T["type string"]["string"]["should handle optional"] = function()
   eq(validate({ type = "string", }, nil), false)
   eq(validate({ type = "string", optional = true, }, nil), true)
 end
 
-T["primitives"]["number"] = MiniTest.new_set()
-T["primitives"]["number"]["should return true for numbers"] = function()
+T["type string"]["number"] = MiniTest.new_set()
+T["type string"]["number"]["should return true for numbers"] = function()
   eq(validate({ type = "number", }, 123), true)
   eq(validate({ type = "number", }, 0), true)
 end
-T["primitives"]["number"]["should return false for non-numbers"] = function()
+T["type string"]["number"]["should return false for non-numbers"] = function()
   eq(validate({ type = "number", }, "hello"), false)
   eq(validate({ type = "number", }, true), false)
   eq(validate({ type = "number", }, function() end), false)
   eq(validate({ type = "number", }, {}), false)
 end
-T["primitives"]["number"]["should handle optional"] = function()
+T["type string"]["number"]["should handle optional"] = function()
   eq(validate({ type = "number", }, nil), false)
   eq(validate({ type = "number", optional = true, }, nil), true)
 end
 
-T["primitives"]["boolean"] = MiniTest.new_set()
-T["primitives"]["boolean"]["should return true for booleans"] = function()
+T["type string"]["boolean"] = MiniTest.new_set()
+T["type string"]["boolean"]["should return true for booleans"] = function()
   eq(validate({ type = "boolean", }, true), true)
   eq(validate({ type = "boolean", }, false), true)
 end
-T["primitives"]["boolean"]["should return false for non-booleans"] = function()
+T["type string"]["boolean"]["should return false for non-booleans"] = function()
   eq(validate({ type = "boolean", }, "hello"), false)
   eq(validate({ type = "boolean", }, 123), false)
   eq(validate({ type = "boolean", }, function() end), false)
   eq(validate({ type = "boolean", }, {}), false)
 end
-T["primitives"]["boolean"]["should handle optional"] = function()
+T["type string"]["boolean"]["should handle optional"] = function()
   eq(validate({ type = "boolean", }, nil), false)
   eq(validate({ type = "boolean", optional = true, }, nil), true)
 end
 
-T["primitives"]["function"] = MiniTest.new_set()
-T["primitives"]["function"]["should return true for functions"] = function()
+T["type string"]["any"] = MiniTest.new_set()
+T["type string"]["any"]["should return true for any value"] = function()
+  eq(validate({ type = "any", }, 123), true)
+  eq(validate({ type = "any", }, "hello"), true)
+  eq(validate({ type = "any", }, true), true)
+  eq(validate({ type = "any", }, function() end), true)
+  eq(validate({ type = "any", }, {}), true)
+end
+T["type string"]["any"]["should handle optional"] = function()
+  eq(validate({ type = "any", }, nil), true)
+  eq(validate({ type = "boolean", optional = true, }, nil), true)
+end
+
+T["type string"]["function"] = MiniTest.new_set()
+T["type string"]["function"]["should return true for functions"] = function()
   eq(validate({ type = "function", }, function() end), true)
 end
-T["primitives"]["function"]["should return false for non-functions"] = function()
+T["type string"]["function"]["should return false for non-functions"] = function()
   eq(validate({ type = "function", }, "hello"), false)
   eq(validate({ type = "function", }, 123), false)
   eq(validate({ type = "function", }, true), false)
   eq(validate({ type = "function", }, {}), false)
 end
-T["primitives"]["function"]["should handle optional"] = function()
+T["type string"]["function"]["should handle optional"] = function()
   eq(validate({ type = "function", }, nil), false)
   eq(validate({ type = "function", optional = true, }, nil), true)
 end
 
-T["primitives"]["nil"] = MiniTest.new_set()
-T["primitives"]["nil"]["should return true for nil"] = function()
+T["type string"]["nil"] = MiniTest.new_set()
+T["type string"]["nil"]["should return true for nil"] = function()
   eq(validate({ type = "nil", }, nil), true)
 end
-T["primitives"]["nil"]["should return false for non-nils"] = function()
+T["type string"]["nil"]["should return false for non-nils"] = function()
   eq(validate({ type = "nil", }, "hello"), false)
   eq(validate({ type = "nil", }, 123), false)
   eq(validate({ type = "nil", }, function() end), false)
   eq(validate({ type = "nil", }, {}), false)
   eq(validate({ type = "nil", }, false), false)
 end
-T["primitives"]["boolean"]["should handle optional"] = function()
+T["type string"]["boolean"]["should handle optional"] = function()
   eq(validate({ type = "nil", optional = true, }, nil), true)
 end
 
-T["literal"] = MiniTest.new_set()
-T["literal"]["should return true for literals"] = function()
+T["type literla"] = MiniTest.new_set()
+T["type literla"]["should return true for literals"] = function()
   eq(validate({ type = literal "hello", }, "hello"), true)
   eq(validate({ type = literal { 1, 2, 3, }, }, { 1, 2, 3, }), true)
 end
-T["literal"]["should return false for non-string literals"] = function()
+T["type literla"]["should return false for non-string literals"] = function()
   eq(validate({ type = literal "hello", }, "there"), false)
   eq(validate({ type = literal "hello", }, function() end), false)
   eq(validate({ type = literal "hello", }, 123), false)
   eq(validate({ type = literal "hello", }, true), false)
   eq(validate({ type = literal "hello", }, {}), false)
 end
-T["literal"]["should handle optional"] = function()
+T["type literla"]["should handle optional"] = function()
   eq(validate({ type = literal "hello", }, nil), false)
   eq(validate({ type = literal "hello", optional = true, }, nil), true)
 end
 
-T["table"] = MiniTest.new_set()
-T["table"]["array"] = MiniTest.new_set()
-T["table"]["array"]["should return true for tables where every value matches the entries type"] = function()
+T["type table"] = MiniTest.new_set()
+T["type table"]["array"] = MiniTest.new_set()
+T["type table"]["array"]["should return true for tables where every value matches the entries type"] = function()
   eq(validate({ type = "table", entries = "number", }, {}), true)
   eq(validate({ type = "table", entries = "number", }, { 1, 2, 3, }), true)
   eq(validate({ type = "table", entries = "number", }, { 1, nil, 3, }), true)
 end
-T["table"]["array"]["should return false for tables where not every value matches the entries type"] = function()
+T["type table"]["array"]["should return false for tables where not every value matches the entries type"] = function()
   eq(validate({ type = "table", entries = "number", }, { 1, 2, "hello", }), false)
 end
-T["table"]["array"]["should return false for non-tables"] = function()
+T["type table"]["array"]["should return false for non-tables"] = function()
   eq(validate({ type = "table", entries = "number", }, "there"), false)
   eq(validate({ type = "table", entries = "number", }, function() end), false)
   eq(validate({ type = "table", entries = "number", }, 123), false)
   eq(validate({ type = "table", entries = "number", }, true), false)
 end
-T["table"]["array"]["should handle optional"] = function()
+T["type table"]["array"]["should handle optional"] = function()
   eq(validate({ type = "table", entries = "number", }, nil), false)
   eq(validate({ type = "table", entries = "number", optional = true, }, nil), true)
 end
 
-T["table"]["tuple"] = MiniTest.new_set()
-T["table"]["tuple"]["should return true for tables where every value matches the entries"] = function()
+T["type table"]["tuple"] = MiniTest.new_set()
+T["type table"]["tuple"]["should return true for tables where every value matches the entries"] = function()
   eq(
     validate(
       {
@@ -139,7 +152,7 @@ T["table"]["tuple"]["should return true for tables where every value matches the
     )
     , true)
 end
-T["table"]["tuple"]["should return true for tables with more values than the schema"] = function()
+T["type table"]["tuple"]["should return true for tables with more values than the schema"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -148,7 +161,7 @@ T["table"]["tuple"]["should return true for tables with more values than the sch
     },
   }, { "hello", 1, 2, }), true)
 end
-T["table"]["tuple"]["should return false for tables where not every value matches the entries"] = function()
+T["type table"]["tuple"]["should return false for tables where not every value matches the entries"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -164,7 +177,7 @@ T["table"]["tuple"]["should return false for tables where not every value matche
     },
   }, { "hello", }), false)
 end
-T["table"]["tuple"]["should return false for non-tables"] = function()
+T["type table"]["tuple"]["should return false for non-tables"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -194,7 +207,7 @@ T["table"]["tuple"]["should return false for non-tables"] = function()
     },
   }, true), false)
 end
-T["table"]["tuple"]["should handle top-level optional"] = function()
+T["type table"]["tuple"]["should handle top-level optional"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -211,7 +224,7 @@ T["table"]["tuple"]["should handle top-level optional"] = function()
     optional = true,
   }, nil), true)
 end
-T["table"]["tuple"]["should handle level optional entries"] = function()
+T["type table"]["tuple"]["should handle level optional entries"] = function()
   eq(validate({
       type = "table",
       entries = {
