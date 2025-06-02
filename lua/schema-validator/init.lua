@@ -90,6 +90,18 @@ M.validate = function(schema, val)
           end
         end
 
+        -- TODO: support a `strict` option
+        -- for key, entry in pairs(val) do
+        --   local schema_entry = schema.entries[key]
+        --   if schema_entry == nil then
+        --     return false
+        --   end
+        --
+        --   if not M.validate(schema_entry, entry) then
+        --     return false
+        --   end
+        -- end
+        --
         return true
       end
     end

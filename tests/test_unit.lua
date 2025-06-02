@@ -117,51 +117,134 @@ T["type literla"]["should handle optional"] = function()
 end
 
 T["type table"] = MiniTest.new_set()
-T["type table"]["array"] = MiniTest.new_set()
-T["type table"]["array"]["should return true for tables where every value matches the entries type"] = function()
-  eq(validate({ type = "table", entries = "number", }, {}), true)
-  eq(validate({ type = "table", entries = "number", }, { 1, 2, 3, }), true)
-  eq(validate({ type = "table", entries = "number", }, { 1, nil, 3, }), true)
-end
-T["type table"]["array"]["should return false for tables where not every value matches the entries type"] = function()
-  eq(validate({ type = "table", entries = "number", }, { 1, 2, "hello", }), false)
-end
-T["type table"]["array"]["should return false for non-tables"] = function()
+T["type table"]["arbitrary length"] = MiniTest.new_set()
+T["type table"]["arbitrary length"]["should return false for non-tables"] = function()
   eq(validate({ type = "table", entries = "number", }, "there"), false)
   eq(validate({ type = "table", entries = "number", }, function() end), false)
   eq(validate({ type = "table", entries = "number", }, 123), false)
   eq(validate({ type = "table", entries = "number", }, true), false)
 end
-T["type table"]["array"]["should handle optional"] = function()
+T["type table"]["arbitrary length"]["should handle optional"] = function()
   eq(validate({ type = "table", entries = "number", }, nil), false)
   eq(validate({ type = "table", entries = "number", optional = true, }, nil), true)
 end
-
-T["type table"]["tuple"] = MiniTest.new_set()
-T["type table"]["tuple"]["should return true for tables where every value matches the entries"] = function()
-  eq(
-    validate(
-      {
-        type = "table",
-        entries = {
-          { type = "string", },
-          { type = "number", },
-        },
-      },
-      { "hello", 1, }
-    )
-    , true)
+T["type table"]["arbitrary length"]["should return true for tables where every value matches the entries type"] = function()
+  eq(validate({ type = "table", entries = "number", }, {}), true)
+  eq(validate({ type = "table", entries = "number", }, { 1, 2, 3, }), true)
+  eq(validate({ type = "table", entries = "number", }, { 1, nil, 3, }), true)
+  eq(validate({ type = "table", entries = "number", }, { 1, hello = nil, 3, }), true)
+  eq(validate({ type = "table", entries = "number", }, { 1, 2, hello = 3, }), true)
 end
-T["type table"]["tuple"]["should return true for tables with more values than the schema"] = function()
+T["type table"]["arbitrary length"]["should return false for tables where not every value matches the entries type"] = function()
+  eq(validate({ type = "table", entries = "number", }, { 1, 2, "hello", }), false)
+end
+
+T["type table"]["fixed length"] = MiniTest.new_set()
+T["type table"]["fixed length"]["key-value pairs"] = MiniTest.new_set()
+T["type table"]["fixed length"]["key-value pairs"]["should return true for tables where every value matches the entries"] = function()
+  eq(validate(
+    {
+      type = "table",
+      entries = {
+        first = { type = "string", },
+        second = { type = "number", },
+      },
+    },
+    { first = "hello", second = 1, }), true)
+  eq(validate(
+    {
+      type = "table",
+      entries = {
+        first = { type = "string", },
+        second = { type = "number", },
+      },
+    },
+    { first = "hello", second = 1, nil, }), true)
+  eq(validate(
+    {
+      type = "table",
+      entries = {
+        first = { type = "string", },
+        second = { type = "number", },
+      },
+    },
+    -- known limitation, `pairs` skips over nil values for tables
+    { first = "hello", second = 1, third = nil, }), true)
+end
+T["type table"]["fixed length"]["key-value pairs"]["should return true for tables with more values than the schema"] = function()
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+  }, { first = "hello", second = 1, third = 2, }), true)
+end
+T["type table"]["fixed length"]["key-value pairs"]["should return false for tables where not every value matches the entries"] = function()
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+  }, {}), false)
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+  }, { first = "hello", }), false)
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+  }, { first = "hello", second = true, }), false)
+end
+
+T["type table"]["fixed length"]["lists"] = MiniTest.new_set()
+T["type table"]["fixed length"]["lists"]["should return true for tables where every value matches the entries"] = function()
+  eq(validate(
+    {
+      type = "table",
+      entries = {
+        { type = "string", },
+        { type = "number", },
+      },
+    },
+    { "hello", 1, }), true)
+  eq(validate(
+    {
+      type = "table",
+      entries = {
+        { type = "string", },
+        { type = "number", },
+      },
+    },
+    { "hello", 1, nil, }), true)
+  eq(validate(
+    {
+      type = "table",
+      entries = {
+        { type = "string", },
+        { type = "number", },
+      },
+    },
+    -- known limitation, `pairs` skips over nil values for tables
+    { "hello", 1, third = nil, }), true)
+end
+T["type table"]["fixed length"]["lists"]["should return true for tables with more values than the schema"] = function()
   eq(validate({
     type = "table",
     entries = {
       { type = "string", },
       { type = "number", },
     },
-  }, { "hello", 1, 2, }), true)
+  }, { "hello", 1, 2, }), false)
 end
-T["type table"]["tuple"]["should return false for tables where not every value matches the entries"] = function()
+T["type table"]["fixed length"]["lists"]["should return false for tables where not every value matches the entries"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -176,8 +259,16 @@ T["type table"]["tuple"]["should return false for tables where not every value m
       { type = "number", },
     },
   }, { "hello", }), false)
+  eq(validate({
+    type = "table",
+    entries = {
+      { type = "string", },
+      { type = "number", },
+    },
+  }, { "hello", true, }), false)
 end
-T["type table"]["tuple"]["should return false for non-tables"] = function()
+
+T["type table"]["fixed length"]["should return false for non-tables"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -207,7 +298,7 @@ T["type table"]["tuple"]["should return false for non-tables"] = function()
     },
   }, true), false)
 end
-T["type table"]["tuple"]["should handle top-level optional"] = function()
+T["type table"]["fixed length"]["should handle top-level optional"] = function()
   eq(validate({
     type = "table",
     entries = {
@@ -224,7 +315,29 @@ T["type table"]["tuple"]["should handle top-level optional"] = function()
     optional = true,
   }, nil), true)
 end
-T["type table"]["tuple"]["should handle level optional entries"] = function()
+T["type table"]["fixed length"]["key-value pairs"] = MiniTest.new_set()
+T["type table"]["fixed length"]["key-value pairs"]["should handle level optional entries"] = function()
+  eq(validate({
+      type = "table",
+      entries = {
+        first = { type = "string", optional = true, },
+        second = { type = "number", },
+      },
+    },
+    { nil, second = 123, }
+  ), true)
+  eq(validate({
+      type = "table",
+      entries = {
+        first = { type = "string", optional = true, },
+        second = { type = "number", },
+      },
+    },
+    { first = nil, second = 123, }
+  ), true)
+end
+T["type table"]["fixed length"]["lists"] = MiniTest.new_set()
+T["type table"]["fixed length"]["lists"]["should handle level optional entries"] = function()
   eq(validate({
       type = "table",
       entries = {
@@ -233,6 +346,15 @@ T["type table"]["tuple"]["should handle level optional entries"] = function()
       },
     },
     { nil, 123, }
+  ), true)
+  eq(validate({
+      type = "table",
+      entries = {
+        { type = "number", },
+        { type = "string", optional = true, },
+      },
+    },
+    { 123, nil, }
   ), true)
 end
 

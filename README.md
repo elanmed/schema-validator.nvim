@@ -14,10 +14,9 @@ validate({ type = "number", }, 123)
 validate({ type = "string", }, "hello")
 validate({ type = "boolean", }, true)
 validate({ type = "function", }, function() end)
-validate({ type = "any", }, --[[anything]])
 ```
 
-### Tables with a set number of items (tuples)
+### Tables with a set number of items
 
 ```lua 
 validate(
@@ -75,6 +74,11 @@ validate(
   },
   { nil, 123, } -- or `optional` can mean the entry itself
 )
+```
+
+### Any
+```lua
+validate({ type = "any", }, --[[returns true for anything]] )
 ```
 
 ### Custom validators
