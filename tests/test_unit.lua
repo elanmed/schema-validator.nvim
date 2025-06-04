@@ -468,6 +468,12 @@ T["malformed schema"]["when the schema.optional is not a boolean or nil, it shou
   err(function() validate({ type = "string", optional = "hello", }, "there") end)
   err(function() validate({ type = "string", optional = {}, }, "there") end)
 end
+T["malformed schema"]["when the schema.exact is not a boolean or nil, it should throw"] = function()
+  err(function() validate({ type = "table", entries = { 1, 2, 3, }, exact = function() end, }, {}) end)
+  err(function() validate({ type = "table", entries = { 1, 2, 3, }, exact = 123, }, {}) end)
+  err(function() validate({ type = "table", entries = { 1, 2, 3, }, exact = "hello", }, {}) end)
+  err(function() validate({ type = "table", entries = { 1, 2, 3, }, exact = {}, }, {}) end)
+end
 T["malformed schema"]["when the type(schema.type) is not a string or function, it should throw"] = function()
   err(function() validate({ type = {}, }, "there") end)
   err(function() validate({ type = true, }, "there") end)

@@ -47,6 +47,16 @@ M.validate = function(schema, val)
     )
   end
 
+  if type(schema.exact) ~= "nil" and type(schema.exact) ~= "boolean" then
+    error(
+      string.format(
+        "Expected `type(schema.exact)` to be `nil` or `boolean`, received `%s`. Schema: %s",
+        type(schema.exact),
+        vim.inspect(schema)
+      )
+    )
+  end
+
   local optional = default(schema.optional, false)
   if val == nil and optional then
     return true
