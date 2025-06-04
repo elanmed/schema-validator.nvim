@@ -171,15 +171,6 @@ T["type table"]["fixed length"]["key-value pairs"]["should return true for table
     -- known limitation, `pairs` skips over nil values for tables
     { first = "hello", second = 1, third = nil, }), true)
 end
-T["type table"]["fixed length"]["key-value pairs"]["should return true for tables with more values than the schema"] = function()
-  eq(validate({
-    type = "table",
-    entries = {
-      first = { type = "string", },
-      second = { type = "number", },
-    },
-  }, { first = "hello", second = 1, third = 2, }), true)
-end
 T["type table"]["fixed length"]["key-value pairs"]["should return false for tables where not every value matches the entries"] = function()
   eq(validate({
     type = "table",
@@ -202,6 +193,34 @@ T["type table"]["fixed length"]["key-value pairs"]["should return false for tabl
       second = { type = "number", },
     },
   }, { first = "hello", second = true, }), false)
+end
+T["type table"]["fixed length"]["key-value pairs"]["exact"] = MiniTest.new_set()
+T["type table"]["fixed length"]["key-value pairs"]["exact"]["should return false for tables with more values than the schema when exact is true"] = function()
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+    exact = true,
+  }, { first = "hello", second = 1, third = 2, }), false)
+end
+T["type table"]["fixed length"]["key-value pairs"]["exact"]["should return true for tables with more values than the schema when exact is false"] = function()
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+  }, { first = "hello", second = 1, third = 2, }), true)
+  eq(validate({
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      second = { type = "number", },
+    },
+    exact = false,
+  }, { first = "hello", second = 1, third = 2, }), true)
 end
 
 T["type table"]["fixed length"]["lists"] = MiniTest.new_set()
@@ -235,15 +254,6 @@ T["type table"]["fixed length"]["lists"]["should return true for tables where ev
     -- known limitation, `pairs` skips over nil values for tables
     { "hello", 1, third = nil, }), true)
 end
-T["type table"]["fixed length"]["lists"]["should return true for tables with more values than the schema"] = function()
-  eq(validate({
-    type = "table",
-    entries = {
-      { type = "string", },
-      { type = "number", },
-    },
-  }, { "hello", 1, 2, }), false)
-end
 T["type table"]["fixed length"]["lists"]["should return false for tables where not every value matches the entries"] = function()
   eq(validate({
     type = "table",
@@ -266,6 +276,34 @@ T["type table"]["fixed length"]["lists"]["should return false for tables where n
       { type = "number", },
     },
   }, { "hello", true, }), false)
+end
+T["type table"]["fixed length"]["lists"]["exact"] = MiniTest.new_set()
+T["type table"]["fixed length"]["lists"]["exact"]["should return false for tables with more values than the schema when exact is true"] = function()
+  eq(validate({
+    type = "table",
+    entries = {
+      { type = "string", },
+      { type = "number", },
+    },
+    exact = true,
+  }, { "hello", 1, 2, }), false)
+end
+T["type table"]["fixed length"]["lists"]["exact"]["should return true for tables with more values than the schema when exact is false"] = function()
+  eq(validate({
+    type = "table",
+    entries = {
+      { type = "string", },
+      { type = "number", },
+    },
+  }, { "hello", 1, 2, }), true)
+  eq(validate({
+    type = "table",
+    entries = {
+      { type = "string", },
+      { type = "number", },
+    },
+    exact = false,
+  }, { "hello", 1, 2, }), true)
 end
 
 T["type table"]["fixed length"]["should return false for non-tables"] = function()

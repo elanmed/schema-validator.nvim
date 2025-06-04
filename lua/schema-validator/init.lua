@@ -20,6 +20,7 @@ local M = {}
 
 --- @class TableSchema : BaseSchema
 --- @field entries? Type | Schema[]
+--- @field exact? boolean
 
 --- @alias Schema BaseSchema | TableSchema
 
@@ -90,18 +91,20 @@ M.validate = function(schema, val)
           end
         end
 
-        -- TODO: support a `strict` option
-        -- for key, entry in pairs(val) do
-        --   local schema_entry = schema.entries[key]
-        --   if schema_entry == nil then
-        --     return false
-        --   end
-        --
-        --   if not M.validate(schema_entry, entry) then
-        --     return false
-        --   end
-        -- end
-        --
+        local exact = default(schema.exact, false)
+        if exact then
+          for key, entry in pairs(val) do
+            local schema_entry = schema.entries[key]
+            if schema_entry == nil then
+              return false
+            end
+
+            if not M.validate(schema_entry, entry) then
+              return false
+            end
+          end
+        end
+
         return true
       end
     end

@@ -4,7 +4,7 @@ A schema validator for your Neovim plugins.
 
 Built for Neovim to use the `vim.*` helper functions.
 
-> All examples return `true`
+> All examples return `true` unless otherwise noted
 
 ### Values compared with the `type` function
 
@@ -14,6 +14,18 @@ validate({ type = "number", }, 123)
 validate({ type = "string", }, "hello")
 validate({ type = "boolean", }, true)
 validate({ type = "function", }, function() end)
+```
+
+### Tables with an arbitrary number of items
+
+```lua 
+validate(
+  {
+    type = "table",
+    entries = "number",
+  },
+  { 1, 2, 3, 4, }
+)
 ```
 
 ### Tables with a set number of items
@@ -29,24 +41,31 @@ validate(
   },
   { first = "hello", 123, }
 )
+validate(
+  {
+    type = "table",
+    entries = {
+      first = { type = "string", },
+      { type = "number", },
+    },
+  },
+  { first = "hello", 123, "there" } -- default behavior is to return `true` for tables which include more items than its schema
+)
 ```
 
-### Tables with an arbitrary number of items
+#### `exact`
 
 ```lua 
 validate(
   {
     type = "table",
-    entries = "number",
+    entries = {
+      first = { type = "string", },
+      { type = "number", },
+    },
+    exact = true
   },
-  { 1, 2, 3, 4, }
-)
-validate(
-  {
-    type = "table",
-    entries = "number",
-  },
-  { 1, nil, 3, 4, } -- `true` because `nil` is ignored by `pairs`
+  { first = "hello", 123, "there" } -- returns `false`
 )
 ```
 
