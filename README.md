@@ -1,8 +1,8 @@
 # schema-validator.nvim
 
-A schema validator for your Neovim plugins. 
+Run-time schema-validation in Lua
 
-Built for Neovim to use the `vim.*` helper functions.
+Built using Neovim's `vim.*` API
 
 > All examples return `true` unless otherwise noted
 
@@ -91,7 +91,7 @@ validate(
       { type = "number", },
     },
   },
-  { nil, 123, } -- or `optional` can mean the entry itself
+  { nil, 123, } -- or `optional` can mean the entry itself. No way to differentiate between the two in lua
 )
 ```
 
