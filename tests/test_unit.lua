@@ -99,19 +99,19 @@ T["type string"]["boolean"]["should handle optional"] = function()
   eq(validate({ type = "nil", optional = true, }, nil), true)
 end
 
-T["type literla"] = MiniTest.new_set()
-T["type literla"]["should return true for literals"] = function()
+T["type literal"] = MiniTest.new_set()
+T["type literal"]["should return true for literals"] = function()
   eq(validate({ type = literal "hello", }, "hello"), true)
   eq(validate({ type = literal { 1, 2, 3, }, }, { 1, 2, 3, }), true)
 end
-T["type literla"]["should return false for non-string literals"] = function()
+T["type literal"]["should return false for non-string literals"] = function()
   eq(validate({ type = literal "hello", }, "there"), false)
   eq(validate({ type = literal "hello", }, function() end), false)
   eq(validate({ type = literal "hello", }, 123), false)
   eq(validate({ type = literal "hello", }, true), false)
   eq(validate({ type = literal "hello", }, {}), false)
 end
-T["type literla"]["should handle optional"] = function()
+T["type literal"]["should handle optional"] = function()
   eq(validate({ type = literal "hello", }, nil), false)
   eq(validate({ type = literal "hello", optional = true, }, nil), true)
 end
@@ -134,9 +134,11 @@ T["type table"]["arbitrary length"]["should return true for tables where every v
   eq(validate({ type = "table", entries = "number", }, { 1, nil, 3, }), true)
   eq(validate({ type = "table", entries = "number", }, { 1, hello = nil, 3, }), true)
   eq(validate({ type = "table", entries = "number", }, { 1, 2, hello = 3, }), true)
+  eq(validate({ type = "table", entries = function(val) return val == "hello" end, }, { "hello", "hello", }), true)
 end
 T["type table"]["arbitrary length"]["should return false for tables where not every value matches the entries type"] = function()
   eq(validate({ type = "table", entries = "number", }, { 1, 2, "hello", }), false)
+  eq(validate({ type = "table", entries = function(val) return val == "hello" end, }, { "hello", "there", }), false)
 end
 
 T["type table"]["fixed length"] = MiniTest.new_set()
@@ -481,10 +483,8 @@ T["malformed schema"]["when the type(schema.type) is not a string or function, i
   err(function() validate({ type = nil, }, "there") end)
 end
 T["malformed schema"]["when the schema.entries is not a string or table, it should throw"] = function()
-  err(function() validate({ type = "table", entries = function() end, }, {}) end)
   err(function() validate({ type = "table", entries = true, }, {}) end)
   err(function() validate({ type = "table", entries = 123, }, {}) end)
-  err(function() validate({ type = "table", entries = nil, }, {}) end)
 end
 
 T["kitchen sink"] = MiniTest.new_set()
