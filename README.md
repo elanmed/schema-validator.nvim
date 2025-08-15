@@ -6,7 +6,7 @@ Runtime schema-validation built with Neovim's Lua utilities.
 
 ### `validate`
 
-`validate` will return false and when the `val` does not match the `schema`, otherwise `true`.
+`validate` will return `false` and when the `val` does not match the `schema`, otherwise `true`.
 
 ```lua
 --- @alias CustomValidator fun(val: any): boolean
@@ -44,7 +44,7 @@ assert(opts)
 
 ### `notify_assert`
 
-`notify_assert` will return false and call `vim.notify` when the `val` does not match the `schema`, otherwise `true`.
+`notify_assert` will return `false` and call `vim.notify` when the `val` does not match the `schema`, otherwise `true`.
 
 ```lua
 --- @class AssertOpts

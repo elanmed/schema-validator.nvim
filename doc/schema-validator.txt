@@ -33,7 +33,7 @@ API                                                     *schema-validator-api*
                                                                               
 `VALIDATE`                                         *schema-validator-validate*
 
-`validate` will return false and when the `val` does not match the `schema`,
+`validate` will return `false` and when the `val` does not match the `schema`,
 otherwise `true`.
 
 >lua
@@ -75,7 +75,7 @@ similar to the native `assert`.
                                                                               
 `NOTIFY_ASSERT`                               *schema-validator-notify_assert*
 
-`notify_assert` will return false and call `vim.notify` when the `val` does
+`notify_assert` will return `false` and call `vim.notify` when the `val` does
 not match the `schema`, otherwise `true`.
 
 >lua
