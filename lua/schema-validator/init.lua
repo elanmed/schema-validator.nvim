@@ -77,6 +77,7 @@ local M = {}
 --- @alias Schema BaseSchema | TableSchema
 
 --- @param schema Schema
+--- @param val any
 --- @return boolean
 M.validate = function(schema, val)
   -- In an earlier version of `schema-validator`, I experimented with validating the shape a the `schema` argument with `validate` itself.

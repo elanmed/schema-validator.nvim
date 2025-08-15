@@ -4,6 +4,62 @@ Run-time schema-validation in Lua
 
 Built using Neovim's `vim.*` API
 
+## API
+
+### `validate`
+
+`validate` will return false and when the `val` does not match the `schema`, otherwise `true`.
+
+```lua
+--- @alias CustomValidator fun(val: any): boolean
+--- @alias Type "nil" | "number" | "string" | "boolean" | "function" | "table" | "any" | CustomValidator
+
+--- @class BaseSchema
+--- @field type Type
+--- @field optional? boolean
+
+--- @class TableSchema : BaseSchema
+--- @field entries? Type | Schema[]
+--- @field exact? boolean
+
+--- @alias Schema BaseSchema | TableSchema
+
+--- @param schema Schema
+--- @param val any
+--- @return boolean
+validate(schema, val)
+```
+
+### `assert`
+
+`assert` will throw an error when the `val` does not match the `schema`, similar to the native `assert`.
+
+```lua
+--- @class AssertOpts
+--- @field name string
+--- @field schema Schema
+--- @field val any
+
+--- @param opts AssertOpts
+assert(opts)
+```
+
+### `notify_assert`
+
+`notify_assert` will return false and call `vim.notify` when the `val` does not match the `schema`, otherwise `true`.
+
+```lua
+--- @class AssertOpts
+--- @field name string
+--- @field schema Schema
+--- @field val any
+
+--- @param opts AssertOpts
+notify_assert(opts)
+```
+
+## Examples
+
 > All examples return `true` unless otherwise noted
 
 ### Values compared with the `type` function

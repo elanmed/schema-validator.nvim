@@ -1,0 +1,14 @@
+schema-validator-any	schema-validator.txt	/*schema-validator-any*
+schema-validator-api	schema-validator.txt	/*schema-validator-api*
+schema-validator-assert	schema-validator.txt	/*schema-validator-assert*
+schema-validator-custom-validators	schema-validator.txt	/*schema-validator-custom-validators*
+schema-validator-exact	schema-validator.txt	/*schema-validator-exact*
+schema-validator-examples	schema-validator.txt	/*schema-validator-examples*
+schema-validator-literal	schema-validator.txt	/*schema-validator-literal*
+schema-validator-notify_assert	schema-validator.txt	/*schema-validator-notify_assert*
+schema-validator-optional	schema-validator.txt	/*schema-validator-optional*
+schema-validator-schema-validator.nvim	schema-validator.txt	/*schema-validator-schema-validator.nvim*
+schema-validator-table-of-contents	schema-validator.txt	/*schema-validator-table-of-contents*
+schema-validator-union	schema-validator.txt	/*schema-validator-union*
+schema-validator-validate	schema-validator.txt	/*schema-validator-validate*
+schema-validator.txt	schema-validator.txt	/*schema-validator.txt*
