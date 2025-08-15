@@ -134,9 +134,11 @@ T["type table"]["arbitrary length"]["should return true for tables where every v
   eq(validate({ type = "table", entries = "number", }, { 1, nil, 3, }), true)
   eq(validate({ type = "table", entries = "number", }, { 1, hello = nil, 3, }), true)
   eq(validate({ type = "table", entries = "number", }, { 1, 2, hello = 3, }), true)
+  eq(validate({ type = "table", entries = function(val) return val == "hello" end, }, { "hello", "hello", }), true)
 end
 T["type table"]["arbitrary length"]["should return false for tables where not every value matches the entries type"] = function()
   eq(validate({ type = "table", entries = "number", }, { 1, 2, "hello", }), false)
+  eq(validate({ type = "table", entries = function(val) return val == "hello" end, }, { "hello", "there", }), false)
 end
 
 T["type table"]["fixed length"] = MiniTest.new_set()
@@ -481,7 +483,6 @@ T["malformed schema"]["when the type(schema.type) is not a string or function, i
   err(function() validate({ type = nil, }, "there") end)
 end
 T["malformed schema"]["when the schema.entries is not a string or table, it should throw"] = function()
-  err(function() validate({ type = "table", entries = function() end, }, {}) end)
   err(function() validate({ type = "table", entries = true, }, {}) end)
   err(function() validate({ type = "table", entries = 123, }, {}) end)
   err(function() validate({ type = "table", entries = nil, }, {}) end)
@@ -621,6 +622,45 @@ T["kitchen sink"]["should return false when not matched"] = function()
     sixth = { 1, 2, 3, 4, 5, },
     seventh = { false, "there", },
   }), false)
+end
+
+T["assert"] = MiniTest.new_set()
+T["assert"]["should throw with invalid opts"] = function()
+  err(function() validator.assert() end)
+  err(function() validator.assert {} end)
+  err(function() validator.assert { name = "name", } end)
+end
+T["assert"]["should not throw when opts are valid and validation passes"] = function()
+  validator.assert { name = "name", schema = { type = "nil", }, }
+  validator.assert { name = "name", schema = { type = "string", }, val = "hello", }
+end
+T["assert"]["should throw when opts are valid and validation fails"] = function()
+  err(function() validator.assert { name = "name", schema = { type = "string", }, val = 123, } end)
+end
+
+local vim_notify = vim.notify
+
+T["notify_assert"] = MiniTest.new_set {
+  hooks = {
+    pre_case = function()
+      vim.notify = function() end
+    end,
+    post_case = function()
+      vim.notify = vim_notify
+    end,
+  },
+}
+T["notify_assert"]["should throw with invalid opts"] = function()
+  err(function() validator.notify_assert() end)
+  err(function() validator.notify_assert {} end)
+  err(function() validator.notify_assert { name = "name", } end)
+end
+T["notify_assert"]["should not throw when opts are valid and validation passes"] = function()
+  eq(true, validator.notify_assert { name = "name", schema = { type = "nil", }, })
+  eq(true, validator.notify_assert { name = "name", schema = { type = "string", }, val = "hello", })
+end
+T["notify_assert"]["should not throw when opts are valid and validation fails"] = function()
+  eq(false, validator.notify_assert { name = "name", schema = { type = "string", }, val = 123, })
 end
 
 return T
