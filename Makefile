@@ -9,5 +9,6 @@ lint:
 
 docs: 
 	./deps/ts-vimdoc.nvim/scripts/docgen.sh README.md doc/schema-validator.txt schema-validator
+	nvim --headless -c "helptags doc/" -c "qa"
 
 deploy: test lint docs
