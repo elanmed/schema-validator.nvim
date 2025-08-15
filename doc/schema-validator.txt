@@ -1,4 +1,4 @@
-*schema-validator.txt*                               Last change: 2025 June 03
+*schema-validator.txt*                               Last change: 2025 July 03
 
 ==============================================================================
 Table of Contents                         *schema-validator-table-of-contents*
