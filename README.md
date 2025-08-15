@@ -1,6 +1,6 @@
 # schema-validator.nvim
 
-Run-time schema-validation in Lua, built with Neovim's Lua utilities. 
+Runtime schema-validation built with Neovim's Lua utilities. 
 
 ## API
 
