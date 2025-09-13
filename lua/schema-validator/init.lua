@@ -59,8 +59,6 @@ local function build_assert_opt(build_opts)
   end
 end
 
-
-
 local M = {}
 
 --- @alias CustomValidator fun(val: any): boolean
